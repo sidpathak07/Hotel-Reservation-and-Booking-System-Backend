@@ -3,7 +3,7 @@ const app = express();
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const fileupload = require("express-fileupload");
-
+const cors = require("cors");
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -13,7 +13,11 @@ app.use(
     tempFileDir: "/tmp/",
   })
 );
-
+app.use(
+  cors({
+    origin: "http://127.0.0.1:3000",
+  })
+);
 app.use(morgan("tiny"));
 
 //routes
