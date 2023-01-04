@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 
-exports.mailer = async (toemail, token, subject) => {
+exports.mailer = async (toemail, message, subject) => {
   const oauth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
@@ -26,18 +26,10 @@ exports.mailer = async (toemail, token, subject) => {
       from: process.env.MAILER_MAIL,
       to: toemail,
       subject: subject,
-      html: `<!doctype html>
-      <html ⚡4email>
-        <head>
-          <meta charset="utf-8">
-        </head>
-        <body>
-        <p>Please click the given link to verify email <a>http://localhost:4000/api/v1/emailverification/${token}</a></p>
-        </body>
-      </html>`,
+      html: message,
     };
     let result = await mailTransporter.sendMail(mailDetails);
-    return true;
+    return result;
   } catch (error) {
     return false;
   }

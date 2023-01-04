@@ -11,7 +11,8 @@ const {
   removeAdmin,
   adminGetAllAdminList,
   sendTestMail,
-  signupTest,
+  createAdmin,
+  adminSearchEmail,
 } = require("../controllers/userController");
 const { isLoggedIn, customRole } = require("../middlewares/user");
 const router = require("express").Router();
@@ -29,6 +30,9 @@ router.route("/sendtestmail").post(sendTestMail);
 
 //admin routes
 router
+  .route("/admin/createAdmin")
+  .post(isLoggedIn, customRole("admin"), createAdmin);
+router
   .route("/updaterole/addadmin")
   .post(isLoggedIn, customRole("admin"), addAdmin);
 router
@@ -37,4 +41,7 @@ router
 router
   .route("/admin/getAllAdminList")
   .get(isLoggedIn, customRole("admin"), adminGetAllAdminList);
+router
+  .route("/admin/getUser")
+  .post(isLoggedIn, customRole("admin"), adminSearchEmail);
 module.exports = router;

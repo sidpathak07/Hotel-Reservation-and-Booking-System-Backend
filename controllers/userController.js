@@ -48,6 +48,50 @@ exports.signup = async (req, res) => {
   }
 };
 
+exports.createAdmin = async (req, res) => {
+  const { email, name, phoneno } = req.body;
+  const isEmail = validator.isEmail(email);
+  const isName = !!name;
+  const password = "AdminDef@1234#";
+  if (!isEmail) {
+    res.status(403).json({
+      succes: false,
+      message: "Enter valid email",
+    });
+  }
+
+  if (!isName) {
+    res.status(403).json({
+      succes: false,
+      message: "Enter valid Name",
+    });
+  }
+
+  try {
+    let user = await User.create({
+      email,
+      password,
+      name,
+      phoneno,
+      role: "admin",
+    });
+    let token = await user.getEmailVerificationToken();
+    user = await user.save({ validateBeforeSave: false });
+    let message = `Please verify your account using following link <a>http://localhost:4000/api/v1/emailverification/${token}</a> After loging for 1st time change password in profile section`;
+    let result = await mailer(email, message, "Email Verification");
+    res.status(201).json({
+      success: true,
+      isMailSent: result,
+      user,
+    });
+  } catch (error) {
+    res.status(203).json({
+      success: false,
+      error,
+    });
+  }
+};
+
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -259,7 +303,7 @@ exports.sendVerificationMail = async (req, res) => {
     let token = await user.getEmailVerificationToken();
     user = await user.save({ validateBeforeSave: false });
     let message = `<p>Please click the given link to verify email <a>http://localhost:4000/api/v1/emailverification/${token}</a></p>`;
-    mailer(email, token, "Email Verification")
+    mailer(email, message, "Email Verification")
       .then((result) => {
         res.json({
           success: true,
@@ -281,7 +325,7 @@ exports.sendVerificationMail = async (req, res) => {
 };
 
 exports.sendTestMail = async (req, res) => {
-  mailer("kali@g.com", "Test1", "Test1")
+  mailer("siddhantpathak77@gmail.com", "Test1", "Test1")
     .then((result) => {
       console.log("result", result);
       res.json({
@@ -387,6 +431,25 @@ exports.adminGetAllAdminList = async (req, res) => {
     });
   } catch (error) {
     res.status(203).json({
+      success: false,
+      message: "Unknown error",
+    });
+  }
+};
+
+exports.adminSearchEmail = async (req, res) => {
+  const { email } = req.body;
+  console.log(req);
+  try {
+    const user = await User.findOne({ email: email }).select(
+      "_id email role name"
+    );
+    res.status(201).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    res.status(400).json({
       success: false,
       message: "Unknown error",
     });
