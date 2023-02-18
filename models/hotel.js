@@ -50,8 +50,37 @@ const HotelSchema = new mongoose.Schema({
   ],
   roomType: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "RoomType",
+      title: {
+        type: mongoose.Schema.Types.String,
+        required: true,
+      },
+      totalRooms: {
+        type: mongoose.Schema.Types.Number,
+        required: true,
+      },
+      basePrice: {
+        type: mongoose.Schema.Types.Number,
+        required: true,
+      },
+      description: {
+        type: mongoose.Schema.Types.String,
+        required: true,
+      },
+      roomImages: [
+        {
+          id: {
+            type: String,
+            required: true,
+          },
+          secure_url: {
+            type: String,
+            required: true,
+          },
+        },
+      ],
+      availableRooms: {
+        type: mongoose.Schema.Types.Number,
+      },
     },
   ],
   checkIn: {

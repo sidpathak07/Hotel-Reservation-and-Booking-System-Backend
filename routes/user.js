@@ -34,10 +34,10 @@ router
   .post(isLoggedIn, customRole("admin"), createAdmin);
 router
   .route("/updaterole/addadmin")
-  .post(isLoggedIn, customRole("admin"), addAdmin);
+  .put(isLoggedIn, customRole("admin"), addAdmin);
 router
   .route("/updaterole/removeadmin")
-  .post(isLoggedIn, customRole("admin"), removeAdmin);
+  .put(isLoggedIn, customRole("admin"), removeAdmin);
 router
   .route("/admin/getAllAdminList")
   .get(isLoggedIn, customRole("admin"), adminGetAllAdminList);

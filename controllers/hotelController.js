@@ -1,13 +1,13 @@
 const hotel = require("../models/hotel");
 const Hotel = require("../models/hotel");
 const cloudinary = require("cloudinary").v2;
+
 //admin controllers
 exports.adminAddHotel = async (req, res) => {
-  let photos = [];
   let {
     hotelName,
     description,
-    address,
+    formattedAddress,
     city,
     state,
     pincode,
@@ -18,32 +18,13 @@ exports.adminAddHotel = async (req, res) => {
     checkIn,
     checkOut,
     amenities,
+    photoLinks,
+    roomType,
   } = req.body;
-  if (req.files) {
-    for (let i = 0; i < req.files.photos.length; i++) {
-      let result = await cloudinary.uploader.upload(
-        req.files.photos[i].tempFilePath,
-        {
-          folder: "Hotel Images",
-        }
-      );
-      let data = {
-        id: result.public_id,
-        secure_url: result.secure_url,
-      };
-      photos.push(data);
-    }
-  }
-  city = city.toLowerCase();
-  state = state.toLowerCase();
-  latitude = parseFloat(latitude);
-  longitude = parseFloat(longitude);
-  pincode = parseInt(pincode);
-  amenities = amenities.split(",");
   const hotelBody = {
     hotelName,
     description,
-    address,
+    address: formattedAddress,
     city,
     state,
     pincode,
@@ -55,9 +36,9 @@ exports.adminAddHotel = async (req, res) => {
     checkIn,
     checkOut,
     amenities,
-    images: photos,
+    images: photoLinks,
+    roomType,
   };
-
   try {
     let hotel = await Hotel.create(hotelBody);
     res.status(200).json({
@@ -186,6 +167,12 @@ exports.adminUpdateHotelById = async (req, res) => {
   }
 };
 
+exports.checkPhotoUpload = async (req, res) => {
+  console.log(req.body);
+  console.log(req.photos);
+  // for(let i=0;i<req.body.hotel['photo'])
+};
+
 //user controllers
 exports.getSingleHotelById = async (req, res) => {
   const { hotelId } = req.params;
@@ -206,12 +193,14 @@ exports.getSingleHotelById = async (req, res) => {
 
 exports.getHotelListBySearch = async (req, res) => {
   const { query } = req.body;
-  const { page } = req.params;
+  console.log(req.body);
+  // const { page } = req.params;
   try {
-    const hotels = await Hotel.find({ $text: { $search: query } })
-      .select("name address city state ")
-      .skip((page - 1) * 10)
-      .limit(page * 10);
+    const hotels = await Hotel.find({ $text: { $search: query } }).select(
+      "hotelName address city state "
+    );
+    // .limit(page * 10);
+    // .skip((page - 1) * 10)
     res.status(200).json({
       success: true,
       hotels,

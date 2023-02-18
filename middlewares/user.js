@@ -13,6 +13,7 @@ exports.customRole = (...roles) => {
 };
 
 exports.isLoggedIn = async (req, res, next) => {
+  console.log("header", req.header);
   const token =
     req.cookies.token || req.header("Authorization").replace("Bearer ", "");
   if (!token) {
