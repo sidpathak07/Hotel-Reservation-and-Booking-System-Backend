@@ -4,7 +4,6 @@ const {
   getHotelListBySearch,
   adminAddHotel,
   adminDeleteHotelById,
-  adminUpdateHotelById,
   adminGetHotelById,
   addReview,
   deleteReview,
@@ -30,7 +29,7 @@ router
 
 router
   .route("/hotel/deletehotel")
-  .post(isLoggedIn, customRole("admin"), adminDeleteHotelById);
+  .delete(isLoggedIn, customRole("admin"), adminDeleteHotelById);
 
 router
   .route("/hotel/updatehotel")

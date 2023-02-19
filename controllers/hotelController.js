@@ -72,16 +72,32 @@ exports.adminGetHotelById = async (req, res) => {
 };
 
 exports.adminDeleteHotelById = async (req, res) => {
-  const { hotelId } = req.body;
+  let { hotelId } = req.body;
   try {
     let hotel = await Hotel.findById(hotelId);
+    let rooms = hotel.roomType;
+    for (let i = 0; i < rooms.length; i++) {
+      // let roomImages = rooms[i].roomImages;
+      // for (let j = 0; j < roomImages.length; j++)
+      //   console.log(roomImages[j], rooms[i].title);
+      // console.log(rooms[i].roomImages);
+      for (let j = 0; j < rooms[i].roomImages.length; j++) {
+        console.log(rooms[i].roomImages[j].id, rooms[i].title);
+        let result = await cloudinary.uploader.destroy(
+          rooms[i].roomImages[j].id
+        );
+        console.log(result);
+      }
+    }
     for (let i = 0; i < hotel.images.length; i++) {
       let result = await cloudinary.uploader.destroy(hotel.images[i].id);
     }
+
     hotel.delete();
+    // console.log(hotel.roomType);
     res.status(200).json({
       success: true,
-      message: "Hotel Deleted Successfully",
+      message: "Hotel Deleted Successfully!!!",
     });
   } catch (error) {
     res.status(203).json({
